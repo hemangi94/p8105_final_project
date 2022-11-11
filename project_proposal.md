@@ -13,7 +13,7 @@ Vasuda Kapoor, Sara Kramer, Yongzheng Li, Jenesis Merriman, Hemangi Modi
 
 ### Project title
 
-Our tentative project title is, “Rats! Rodent Exposure Impacts on Asthma
+Our tentative project title is: “Rats! Rodent Exposure Impacts on Asthma
 Prevalence in NYC”
 
 ### Motivation for project
@@ -72,3 +72,4 @@ confounding variables?
 -   November 28th to December 2nd: finish any remaining analyses and
     start working on report + website
 -   December 2nd to December 9th: finish working on report + website
+-   December 10: submit project deliverables
