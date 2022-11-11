@@ -1,0 +1,74 @@
+Final Project Proposal
+================
+Vasuda Kapoor, Sara Kramer, Yongzheng Li, Jenesis Merriman, Hemangi Modi
+2022-11-11
+
+### Team members (names and UNIs)
+
+-   Vasuda Kapoor (vk2480)
+-   Sara Kramer (sk4970)
+-   Yongzheng Li (yl4924)
+-   Jenesis Merriman (jhm2176)
+-   Hemangi Modi (hbm2126)
+
+### Project title
+
+Our tentative project title is, “Rats! Rodent Exposure Impacts on Asthma
+Prevalence in NYC”
+
+### Motivation for project
+
+NYC is infamous for the rodents that live among us.
+[Research](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2862381/) shows
+that exposure to rodents is associated with a wide variety of disease
+and poor health outcomes, including asthma symptoms. This project is
+motivated by the following questions: What trends are there in rodent
+infestations throughout NYC? How does it vary by neighborhood? How are
+rodent trends associated with asthma trends? What are the potential
+confounding variables?
+
+### Intended final products
+
+-   Website
+    -   Scope, questions, data
+    -   Tables  
+    -   Dashboard of some visuals–graphs, maps
+    -   Summary of results
+    -   Full report
+-   Screencast video
+-   Github repo
+
+### The anticipated data sources
+
+-   Rodent data:
+    <https://data.cityofnewyork.us/Health/Rodent-Inspection/p937-wjvj>
+-   Asthma data - we need to further look at the data below to see what
+    is the most useful for our purposes
+    -   <https://www.nyc.gov/site/doh/providers/health-topics/asthma-provider-data.page>
+    -   <https://webbi1.health.ny.gov/SASStoredProcess/guest?_program=/EBI/PHIG/apps/asthma_dashboard/ad_dashboard&p=it&ind_id=ad16>
+    -   <https://a816-dohbesp.nyc.gov/IndicatorPublic/beta/data-explorer/asthma/?id=2383#display=summary>
+-   BRFSS
+    -   Report: <https://www.health.ny.gov/statistics/brfss/reports/>
+    -   Data:
+        <https://www.health.ny.gov/statistics/brfss/data.htm#annual>
+
+### Planned analyses/visualizations/coding challenges
+
+-   Planned analyses:
+    -   Asthma rates over time, by location
+    -   Levels of rodent infestation by location
+        -   Overlaid with asthma rates if possible
+    -   Interactive map showing rodent infestations by coordinate
+-   Anticipated Challenges:
+    -   Overlaying rodents and asthma data sets. For example, their
+        coding of locations may not be the same
+
+### The planned timeline
+
+-   November 12th to 18th: look more closely at the data sources and
+    finalize which ones are best to work with for our purposes
+-   November 19th to 24th: clean all the data sources and start working
+    on the analysis
+-   November 28th to December 2nd: finish any remaining analyses and
+    start working on report + website
+-   December 2nd to December 9th: finish working on report + website
