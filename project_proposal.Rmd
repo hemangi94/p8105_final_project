@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 * Hemangi Modi (hbm2126)
 
 ### Project title
-Our tentative project title is, "Rats! Rodent Exposure Impacts on Asthma Prevalence in NYC"
+Our tentative project title is: "Rats! Rodent Exposure Impacts on Asthma Prevalence in NYC"
 
 ### Motivation for project
 NYC is infamous for the rodents that live among us. [Research](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2862381/) shows that exposure to rodents is associated with a wide variety of disease and poor health outcomes, including asthma symptoms. This project is motivated by the following questions: What trends are there in rodent infestations throughout NYC? How does it vary by neighborhood? How are rodent trends associated with asthma trends? What are the potential confounding variables?
@@ -56,5 +56,6 @@ NYC is infamous for the rodents that live among us. [Research](https://www.ncbi.
 * November 19th to 24th: clean all the data sources and start working on the analysis
 * November 28th to December 2nd: finish any remaining analyses and start working on report + website
 * December 2nd to December 9th: finish working on report + website
+* December 10: submit project deliverables
 
 
