@@ -1,0 +1,60 @@
+---
+title: "Data for analysis"
+author: "Vasuda Kapoor"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Library calls
+```{r}
+library(tidyverse)
+```
+
+load NYC rodent data
+```{r}
+rodent_df = readr::read_csv(unzip("rodent_data.zip", "Rodent_Inspection.csv")) %>%
+  janitor::clean_names() %>%
+  separate(inspection_date, into = c("insp_date", "insp_time"), sep = " ") %>%
+  separate(insp_date, into = c("month", "day", "year"), sep = "/") %>%
+  mutate(
+    year = as.numeric(year)
+  ) %>%
+  filter(year > 2004)
+```
+
+load NYC asthma emergency visit data for adults
+```{r}
+asthma_df = read_csv("asthma_ER_visits_adults.csv") %>%
+  janitor::clean_names() %>%
+  rename(
+    year = time
+  ) %>%
+  filter(geo_type == "Borough") %>%
+  group_by(year, geography) %>%
+  select(year, geography, age_adjusted_rate_per_10_000, estimated_annual_rate_per_10_000, number)
+```
+```{r}
+#clean rodent data 
+rodent_df2 = rodent_df %>%
+  mutate(
+    passed = if_else( result == "Passed", TRUE, FALSE)
+  ) %>%
+  group_by(year, borough) %>%
+  count(passed) %>%
+  summarise(
+    num_inspections = sum(n),
+    proportion_passed = n / sum(n)
+  ) %>%
+  filter(!(year %in% c(2007, 2008, 2024, 2025, 2029))) %>%
+  distinct() %>%
+  slice(1) %>%
+  ungroup()
+```
+merge datasets by year and borough
+```{r}
+asthma_rodent_df <- left_join(rodent_df2, asthma_df, by = c('year' = 'year', 'borough' = 'geography'))
+```
+
