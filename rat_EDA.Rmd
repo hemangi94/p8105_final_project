@@ -1,0 +1,239 @@
+---
+title: "Data for analysis with Rat Sightings"
+author: "Jenesis Merriman"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Library calls
+```{r}
+library(tidyverse)
+library(plotly)
+library(readr)
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%")
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis")
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+# With Rat Sightings Data
+
+Load and clean NYC rat sighting data:
+```{r rat data}
+rat_df = read_csv("~/Desktop/p8105_final/Rat_Sightings.csv") %>%
+  janitor::clean_names() %>%
+  mutate(created_date = gsub(" .*","", created_date),
+         address_type = str_to_title(address_type),
+         city = str_to_title(city),
+         borough = str_to_title(borough),
+         location_type = recode(location_type, "Other (Explain Below)" = "Other")) %>%
+  separate(created_date, into = c("month", "day", "year"), sep = "/") %>%
+  mutate(year = as.numeric(year)) %>%
+  filter(borough != "Unspecified") %>%
+  select(month, day, year, location_type, address_type, city, borough, latitude, longitude)
+```
+
+Load NYC asthma emergency visit data for adults:
+```{r asthma data}
+asthma_df = read_csv("asthma_ER_visits_adults.csv") %>%
+  janitor::clean_names() %>%
+  rename(
+    year = time
+  ) %>%
+  filter(geo_type == "Borough") %>%
+  group_by(year, geography) %>%
+  select(year, geography, age_adjusted_rate_per_10_000, estimated_annual_rate_per_10_000, number)
+```
+
+Merge datasets by year and borough: ???
+```{r merge}
+#this would need updating
+asthma_rat_df <- left_join(rat_df, asthma_df, by = c('year' = 'year', 'borough' = 'geography'))
+```
+
+Map sightings by coordinate:
+```{r map}
+#turn it into a heat map since observation count
+rat_map =
+  rat_df %>% 
+  plot_ly(
+    lat = ~latitude, 
+    lon = ~longitude, 
+    type = "scattermapbox", 
+    mode = "markers", 
+    alpha = 0.2,
+    color = ~borough) %>% 
+  layout(
+    mapbox = list(
+      style = 'carto-positron',
+      zoom = 9,
+      center = list(lon = -73.9, lat = 40.7)),
+    title = "<b> Map of Rat Sightings </b>",
+      legend = list(title = list(text = "Borough", size = 9),
+                    orientation = "v",
+                   font = list(size = 9)))
+rat_map
+```
+
+Heat map w/density??
+
+```{r}
+rat_df %>%
+  plot_ly(
+    type = 'densitymapbox',
+    lat = ~latitude,
+    lon = ~longitude,
+    coloraxis = 'coloraxis',
+    radius = 10,
+    color = ~borough) %>%
+  layout(
+    mapbox = list(
+      style = "stamen-terrain",
+      zoom = 9,
+      center = list(lon = -73.9, lat = 40.7)), 
+    coloraxis = list(colorscale = "Viridis"))
+
+```
+
+Plot of sightings over time in NYC overall:
+
+```{r line all}
+overall_rat_line =
+  rat_df %>%
+  group_by(year) %>%
+  count() %>%
+  summarise(n_obs = n) %>% 
+  ggplot(aes(x = year, y = n_obs)) + 
+  geom_line() +
+  labs(
+    title = "Rat Sightings Over Time in NYC",
+    x = "Year",
+    y = "Number of Sightings")
+
+overall_rat_line
+```
+
+Plot of sightings over time in NYC by borough:
+
+```{r line borough}
+rat_line = rat_df %>% 
+  group_by(borough, year) %>%  
+  count() %>%
+  summarise(n_obs = n) %>% 
+  ggplot(aes(x = year, y = n_obs , color = borough )) + 
+  geom_line() +
+  scale_x_continuous(breaks = seq(2010, 2022, by = 1)) +
+  labs(
+    title = "Rat Sightings Over Time by Borough",
+    x = "Year",
+    y = "Number of Sightings")
+
+rat_line
+```
+
+Bar graph of all sightings by borough:
+
+```{r bar borough}
+rat_bar = 
+  rat_df %>% 
+  count(borough) %>% 
+  mutate(borough = fct_reorder(borough, n)) %>% 
+  ggplot(aes(x = borough, y = n, fill = borough)) + 
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Frequency of Rat Sightings by Borough (2010-2022)",
+    x = "Borough",
+    y = "Number of Sightings",
+    fill = "Borough")
+  
+  #plot_ly(x = ~borough, y = ~n, color = ~borough, type = "bar", colors = "viridis")
+
+rat_bar
+```
+Plot of frequency of sightings by borough and year:
+
+```{r}
+rat_bar_time =
+  rat_df %>% 
+  group_by(borough) %>%
+  count(year) %>% 
+  ggplot(aes(x = year, y = n, fill = borough)) +
+  geom_bar(stat = "identity",
+           position = "dodge") +
+  scale_x_continuous(breaks = seq(2010, 2022, by = 1)) +
+  labs(
+    title = "Frequency of Sightings in Boroughs",
+    x = "Year",
+    y = "Number of Sightings",
+    fill = "Borough")
+
+rat_bar_time
+```
+
+Location type:
+```{r}
+location_bar =
+  rat_df %>%
+  count(location_type) %>%
+   mutate(
+    location_type = fct_reorder(location_type, n),
+    ranking = min_rank(desc(n))) %>% 
+  filter(ranking <= 10) %>% 
+  arrange(n) %>%
+  ggplot(aes(x = location_type, y = n, fill = location_type)) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Top 10 Location Types",
+       x = "Location Type",
+       y = "Number of Sightings",
+       fill = "location_type") + coord_flip() +
+  theme(legend.position = "none") 
+
+location_bar
+```
+
+```{r}
+location_grid =
+  rat_df %>%
+  group_by(borough, location_type) %>%
+  count() %>%
+  summarise(n_obs = n) %>%
+   mutate(
+    location_type = fct_reorder(location_type, n_obs),
+    ranking = min_rank(desc(n_obs))) %>% 
+  filter(ranking <= 3) %>% 
+  arrange(ranking) %>%
+  ggplot(aes(x = location_type, y = n_obs, fill = location_type)) + 
+  geom_bar(stat = "identity") +
+  facet_grid(. ~ borough) +
+  labs(title = "Top Sighting Locations by Borough",
+       x = "Location Type",
+       y = "Number of Sightings",
+       fill = "location_type") +
+  theme(axis.text.x = element_blank())
+  
+  
+  #theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+location_grid
+```
+
+Rat asthma plot:
+
+```{r}
+#idk yet i'm tired lol
+```
