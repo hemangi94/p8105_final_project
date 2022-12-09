@@ -1,5 +1,5 @@
 ---
-title: "Data for analysis with Rat Sightings"
+title: "Rat Sightings EDA"
 author: "Jenesis Merriman"
 output: html_document
 ---
@@ -32,7 +32,7 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
-# With Rat Sightings Data
+# Rat Sightings Data
 
 Load and clean NYC rat sighting data:
 ```{r rat data}
