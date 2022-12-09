@@ -13,6 +13,7 @@ Library calls
 library(tidyverse)
 library(plotly)
 library(readr)
+library(patchwork)
 
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -60,15 +61,13 @@ asthma_df = read_csv("asthma_ER_visits_adults.csv") %>%
   select(year, geography, age_adjusted_rate_per_10_000, estimated_annual_rate_per_10_000, number)
 ```
 
-Merge datasets by year and borough: ???
+Merge datasets by year and borough:
 ```{r merge}
-#this would need updating
 asthma_rat_df <- left_join(rat_df, asthma_df, by = c('year' = 'year', 'borough' = 'geography'))
 ```
 
 Map sightings by coordinate:
 ```{r map}
-#turn it into a heat map since observation count
 rat_map =
   rat_df %>% 
   plot_ly(
@@ -235,5 +234,15 @@ location_grid
 Rat asthma plot:
 
 ```{r}
-#idk yet i'm tired lol
+asthma_line =
+  asthma_rat_df %>%
+  filter(year > 2009) %>%
+  mutate(age_adjusted_rate_per_10_000 = as.numeric(age_adjusted_rate_per_10_000, na.rm = TRUE)) %>%
+  group_by(year) %>%
+  summarize(mean_age_adjust = mean(age_adjusted_rate_per_10_000)) %>%
+  drop_na(mean_age_adjust) %>%
+  ggplot(aes(x = year, y = mean_age_adjust)) + 
+  geom_line()
+
+asthma_line + overall_rat_line
 ```
