@@ -44,7 +44,9 @@ rat_df = read_csv("Rat_Sightings.csv") %>%
          borough = str_to_title(borough),
          location_type = recode(location_type, "Other (Explain Below)" = "Other")) %>%
   separate(created_date, into = c("month", "day", "year"), sep = "/") %>%
-  mutate(year = as.numeric(year)) %>%
+  mutate(year = as.numeric(year),
+         month = as.numeric(month),
+         day = as.numeric(day)) %>%
   filter(borough != "Unspecified") %>%
   select(month, day, year, location_type, address_type, city, borough, latitude, longitude)
 ```
