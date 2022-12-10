@@ -51,6 +51,8 @@ rat_df = read_csv("Rat_Sightings.csv") %>%
   select(month, day, year, location_type, address_type, city, borough, latitude, longitude)
 ```
 
+# Asthma Data
+
 Load NYC asthma emergency visit data for adults:
 ```{r asthma data}
 asthma_df = read_csv("asthma_ER_visits_adults.csv") %>%
@@ -58,6 +60,9 @@ asthma_df = read_csv("asthma_ER_visits_adults.csv") %>%
   rename(
     year = time
   ) %>%
+   mutate(age_adjusted_rate_per_10_000 = as.numeric(age_adjusted_rate_per_10_000),
+         estimated_annual_rate_per_10_000 = as.numeric(estimated_annual_rate_per_10_000),
+         number = as.numeric(number)) %>%
   filter(geo_type == "Borough") %>%
   group_by(year, geography) %>%
   select(year, geography, age_adjusted_rate_per_10_000, estimated_annual_rate_per_10_000, number)
