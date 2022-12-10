@@ -75,29 +75,8 @@ asthma_rat_df <- left_join(rat_df, asthma_df, by = c('year' = 'year', 'borough' 
 
 Map sightings by coordinate:
 # change colors to show which borough has the highest sightings
-```{r map}
-rat_map =
-  rat_df %>% 
-  plot_ly(
-    lat = ~latitude, 
-    lon = ~longitude, 
-    type = "scattermapbox", 
-    mode = "markers", 
-    alpha = 0.2,
-    color = ~borough) %>% 
-  layout(
-    mapbox = list(
-      style = 'carto-positron',
-      zoom = 9,
-      center = list(lon = -73.9, lat = 40.7)),
-    title = "<b> Map of Rat Sightings </b>",
-      legend = list(title = list(text = "Borough", size = 9),
-                    orientation = "v",
-                   font = list(size = 9)))
-rat_map
-```
 
-Heat map w/density??
+Heat map w/density
 
 ```{r}
 rat_df %>%
@@ -126,6 +105,7 @@ overall_rat_line =
   count() %>%
   summarise(n_obs = n) %>% 
   ggplot(aes(x = year, y = n_obs)) + 
+  scale_x_continuous(breaks = seq(2010, 2022, 1)) +
   geom_line() +
   labs(
     title = "Rat Sightings Over Time in NYC",
@@ -365,8 +345,6 @@ asthma_borough_time_plot =
 
 asthma_borough_time_plot
 ```
-
-# add red line to indicate missing data in 2015 and 2017
 
 Statistical Analysis
 
