@@ -250,7 +250,11 @@ asthma_line =
   summarize(mean_age_adjust = mean(age_adjusted_rate_per_10_000)) %>%
   drop_na(mean_age_adjust) %>%
   ggplot(aes(x = year, y = mean_age_adjust)) + 
-  geom_line()
+  geom_line() +
+  labs(
+    title = "Asthma ED Visits Over Time in NYC",
+    x = "Year",
+    y = "Mean age adjusted rate per 10,000")
 
 asthma_line + overall_rat_line
 ```
