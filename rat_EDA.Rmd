@@ -349,12 +349,12 @@ asthma_borough_time_plot
 Statistical Analysis
 
 
-Question: Do asthma rates differ based on rat sightings? 
+Question: Do asthma rates differ based on rat sightings?
 
 Statistical modeling plan: Run a regression model, such that:
 outcome variable = asthma rate
 predictor variable = rat sightings
-control for = borough, year, location type
+control for = year
 
 ```{r}
 rat_df2 = rat_df %>%
@@ -375,8 +375,31 @@ asthma_df2 = asthma_df %>%
 
 asthma_rat_df2 = left_join(rat_df2, asthma_df2, by = 'year')
 
-asthma_rat_mod = lm( mean_asthma_rate ~ n_rat_sightings + year, data = asthma_rat_df2) %>%
-  broom::tidy()
+asthma_rat_mod = lm( mean_asthma_rate ~ n_rat_sightings + year, data = asthma_rat_df2)
 
+asthma_rat_mod %>%
+  broom::tidy()
+```
+
+Check linear model assumptions
+```{r}
+# 1. Linear relationship
+plot(asthma_rat_mod, 1)
+```
+
+```{r}
+# 2. Normality of residuals
+hist(asthma_rat_mod$residuals)
+
+plot(asthma_rat_mod, 2)
+```
+
+```{r}
+# 3. Testing the homoscedasticity assumption
+# Plotting residuals
+plot(asthma_rat_mod, 3)
+
+# Breusch-Pagan test
+lmtest::bptest(asthma_rat_mod)
 ```
 
