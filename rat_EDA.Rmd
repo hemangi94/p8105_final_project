@@ -36,7 +36,7 @@ scale_fill_discrete = scale_fill_viridis_d
 
 Load and clean NYC rat sighting data:
 ```{r rat data}
-rat_df = read_csv("~/Desktop/p8105_final/Rat_Sightings.csv") %>%
+rat_df = read_csv("Rat_Sightings.csv") %>%
   janitor::clean_names() %>%
   mutate(created_date = gsub(" .*","", created_date),
          address_type = str_to_title(address_type),
@@ -67,6 +67,7 @@ asthma_rat_df <- left_join(rat_df, asthma_df, by = c('year' = 'year', 'borough' 
 ```
 
 Map sightings by coordinate:
+# change colors to show which borough has the highest sightings
 ```{r map}
 rat_map =
   rat_df %>% 
@@ -246,3 +247,113 @@ asthma_line =
 
 asthma_line + overall_rat_line
 ```
+
+# ASTHMA PLOTS
+
+## Asthma cases in nyc over time
+```{r}
+asthma_num_df =
+  asthma_df %>%
+  mutate(
+    number = as.numeric(number), 
+    data = "Total asthma ER visits"
+  ) %>%
+  group_by(year, data) %>%
+  summarise(n_obs = sum(number, na.rm = TRUE))
+
+asthma_rate_df =
+  asthma_df %>%
+  mutate(
+    age_adjusted_rate_per_10_000 = as.numeric(age_adjusted_rate_per_10_000),
+    data = "Age adjusted asthma ER visit rate"
+  ) %>%
+  group_by(year, data) %>%
+  summarise(n_obs = mean(age_adjusted_rate_per_10_000, na.rm = TRUE))
+
+asthma_estimated_df =
+  asthma_df %>%
+  mutate(
+    estimated_annual_rate_per_10_000 = as.numeric(estimated_annual_rate_per_10_000), 
+    data = "Estimated annual asthma rate"
+  ) %>%
+  group_by(year, data) %>%
+  summarise(n_obs = mean(estimated_annual_rate_per_10_000, na.rm = TRUE))
+
+asthma_years_num_plot =
+  asthma_num_df %>%
+  ggplot(aes(x = year, y = n_obs)) + 
+  geom_line() +
+  scale_x_continuous(breaks = seq(2005, 2018, 1)) +
+  labs(title = "Total number of asthma ER visits per year",
+       x = "Year",
+       y = "Total number of asthma ER visits")
+  
+
+asthma_rate_estimated_plot = 
+  ggplot(data = asthma_rate_df, aes(x = year, y = n_obs, color = data)) + 
+  geom_line() +
+  geom_line(data = asthma_estimated_df) +
+  scale_x_continuous(breaks = seq(2005, 2018, 1)) +
+  labs(title = "Age adjusted vs. Estimated Asthma Rates Over The Years",
+       x = "Year",
+       y = "Rate per 10,000 people")
+  
+
+asthma_years_num_plot
+```
+```{r}
+asthma_rate_estimated_plot
+```
+
+## Mean asthma rate and estimated asthma rate per borough
+
+```{r}
+asthma_rate_borough_plot = 
+  asthma_df %>% 
+  group_by(geography) %>% 
+  mutate(
+    age_adjusted_rate_per_10_000 = as.numeric(age_adjusted_rate_per_10_000),
+    geography = as.factor(geography)
+  ) %>%
+  summarise(
+    asthma_rate = mean(age_adjusted_rate_per_10_000, na.rm = TRUE)
+  ) %>%
+  mutate(geography = fct_reorder(geography, asthma_rate)) %>% 
+  ggplot(aes(x = geography, y = asthma_rate, fill = geography)) + 
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Mean asthma rate per borough (2004-2018)",
+    x = "Borough",
+    y = "Mean Age-Adjusted Asthma Rate per 10,000",
+    fill = "Borough")
+
+asthma_rate_borough_plot
+```
+
+## Asthma rate per borough over time
+```{r}
+asthma_borough_time_plot = 
+  asthma_df %>% 
+  group_by(geography, year) %>% 
+  mutate(
+    age_adjusted_rate_per_10_000 = as.numeric(age_adjusted_rate_per_10_000),
+    geography = as.factor(geography)
+  ) %>%
+  summarise(
+    asthma_rate = mean(age_adjusted_rate_per_10_000, na.rm = TRUE)
+  ) %>%
+  ggplot(aes(x = year, y = asthma_rate, fill = geography)) +
+  geom_bar(stat = "identity",
+           position = "dodge") +
+  scale_x_continuous(breaks = seq(2005, 2018, by = 1)) +
+  labs(
+    title = "Mean Asthma ER Visits in Boroughs Over Time",
+    x = "Year",
+    y = "Mean Asthma ER Visits per 10,000",
+    fill = "Borough")
+
+asthma_borough_time_plot
+```
+
+# add red line to indicate missing data in 2015 and 2017
+
