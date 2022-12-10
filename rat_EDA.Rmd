@@ -357,3 +357,37 @@ asthma_borough_time_plot
 
 # add red line to indicate missing data in 2015 and 2017
 
+Statistical Analysis
+
+
+Question: Do asthma rates differ based on rat sightings? 
+
+Statistical modeling plan: Run a regression model, such that:
+outcome variable = asthma rate
+predictor variable = rat sightings
+control for = borough, year, location type
+
+```{r}
+rat_df2 = rat_df %>%
+  group_by(year) %>%
+  count() %>%
+  summarise(
+    n_rat_sightings = n
+  )
+
+asthma_df2 = asthma_df %>%
+  mutate(
+    age_adjusted_rate_per_10_000 = as.numeric(age_adjusted_rate_per_10_000)
+  ) %>%
+  group_by(year) %>%
+  summarise(
+    mean_asthma_rate = mean(age_adjusted_rate_per_10_000, na.rm = TRUE)
+  )
+
+asthma_rat_df2 = left_join(rat_df2, asthma_df2, by = 'year')
+
+asthma_rat_mod = lm( mean_asthma_rate ~ n_rat_sightings + year, data = asthma_rat_df2) %>%
+  broom::tidy()
+
+```
+
